@@ -1,0 +1,118 @@
+{% extends "Homepage/header.html" %}
+
+{% block content %}
+{% load staticfiles %}
+
+
+<html>
+<!-- 02/13/19 Added Juan De La Torre -->
+
+<style>
+
+form {
+	padding-top: 30px;
+	padding-left: 14px;
+	width : 100%;
+	color: black;
+	font-weight:bold;
+}
+
+.btnokcount{
+	font-weight:bold;
+}
+
+.okdep {
+	color:green;
+}
+
+.nookdep {
+	color:red;
+}
+
+
+</style> 
+
+
+<body ng-app="PP.DepartmentLog" >
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+	<!--<script src="{% static 'PPDepartmentLog.js' %}"></script>-->
+	<script>document.write('<script src="{% static 'PPDepartmentLog.js' %}?ver=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+	{% verbatim %}
+	<div ng-controller="DepartmentLogController">
+	
+
+<!-- START Modal remaining operation -->	
+
+	<div class="modal" id="validationModal"  >
+	  <div class="modal-dialog" role="dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title">Status :</h5>
+		  </div>
+		  <div ng-if="wrongdep == false" class="modal-body">
+				<h3 class="okdep" > <i class="far fa-check-circle"></i> Thank you </h3>
+		  </div>
+		  <div ng-if="wrongdep == true" class="modal-body">		
+				<h1 class="nookdep"> <i class="fas fa-times-circle"></i>  Wrong Department </h1>
+				<h3>Correct Dept: {{correctdept}} </h3>
+				<h3>Alt. Dept: {{altdept}} </h3>
+		  </div>
+		  <div class="modal-footer">
+    		  <button type="button" ng-click="resetFunction()">Done</button>
+		  </div>
+
+		</div>
+	  </div>
+	</div>
+<!-- END Modal remaining operation -->		
+
+
+
+		<form>
+		
+			<legend>Department Log :</legend>
+				
+				<div class="form-group">
+				  <label for="customer">Operator Name :</label>
+				  <p>
+				  <!-- <input size="30" type="text" ng-model="filterlot" id="customer" placeholder="Customer ..." /> -->
+				  <select  ng-model="empname" ng-change="changeFocus3()" ng-options="name as name.listNumber + ' - ' + name.userName for name in deptlogusers" id="emp" placeholder="Name ..." >
+
+
+				  </select>	
+				</div>
+				
+				<div class="form-group">
+				  <label for="note">Notes : </label>
+				  <p>
+				  <input size="15" type="text" ng-model="noteid" ng-change="changeFocus2()" ng-model-options='{ debounce: 1500 }' id="note" placeholder="(Not required) ..." />
+				</div>
+				
+				<div class="form-group">
+				  <label for="dep">Department : </label>
+				  <p>
+				  <input size="15" type="text" ng-model="deptid" ng-change="changeFocus()" ng-model-options='{ debounce: 1000 }' id="dep" placeholder="Department ID ..." />
+				</div>
+				<div class="form-group">
+				  <label for="lotno">Work Order Number : </label>
+				  <p>
+				  <input size="10" type="text" ng-model="deptlot" ng-change="verifyFunction(deptid,deptlot,empname, noteid)" ng-model-options='{ debounce: 1000 }' id="lotno" placeholder="Lot # ..." />
+				</div>
+				
+				
+		</form>
+		
+			
+	</div>
+	{% endverbatim %}
+
+
+
+
+</body>
+</html>
+
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends "Homepage/header.html" %}
+
+{% block content %}
+{% load staticfiles %}
+
+
+<html>
+<!-- Update 02/25/19 - Add override qtys logic -->
+<!-- 3/29/19 add ?1 to the counting js import so it does CTRL+F5 automatically upon loading this page -->
+<style>
+
+form {
+	padding-top: 5px;
+	padding-left: 14px;
+	width : 100%;
+	color: black;
+	font-weight:bold;
+}
+
+.btnokcount{
+	font-weight:bold;
+}
+
+.errortonotify{
+	color: red;
+
+}
+
+div{}
+.form-group{
+vertical-align: bottom;
+}
+
+
+
+</style> 
+
+
+<body ng-app="PP.CountLog" >
+
+	{% verbatim %}
+	<div ng-controller="CountLogController" class="OnLoadCount">	
+
+<!-- START Modal remaining operation -->	
+
+	<div class="modal" id="nextOpModal" ng-cloak>
+	  <div class="modal-dialog" role="dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title">Multiple Counts</h5>
+		  </div>
+		  <div class="modal-body">
+		  <!--W/O Target Qty: {{desiredqty}} Count: {{countnbpart}}-->
+	  			<!--<h2 class="errortonotify" ng-if="belowtarget"> COUNT {{countnbpart}} &lt Target Qty {{desiredqty}}. SEE CENTER OFFICE. </h2>-->
+    		   <h6>Job : {{actualjob1}} Move to: {{ movetoop1 }}</h6> 
+    		   <h6>Job : {{actualjob2}} Move to: {{ movetoop2 }}</h6> 
+    		   <h6>Job : {{actualjob3}} Move to: {{ movetoop3 }}</h6> 
+    		   <h6>Job : {{actualjob4}} Move to: {{ movetoop4 }}</h6> 
+    		   <h6>Job : {{actualjob5}} Move to: {{ movetoop5 }}</h6> 
+    		   <h6>Job : {{actualjob6}} Move to: {{ movetoop6 }}</h6> 
+
+				<p>
+				<!--<h4 class="errortonotify" ng-if="errorclockout == true " > <i class="fas fa-times-circle"></i> Error : Previous operation not clocked out. </h4>-->
+				<!--<h4 class="errortonotify" ng-if="QLABOpen" > <i class="fas fa-times-circle"></i> Error : LAB (Q-LAB) STILL OPEN.</h4>-->
+				<!--<h4 class="errortonotify" ng-if="(countnbpart <= supquantitymin) && overrideqtys != true" > <i class="fas fa-times-circle"></i>{{overrideqtys}}{{OverrideQtys}} Error : Shortage in Quantity ! Report to center office. </h4>-->
+				<!--<h4 class="errortonotify" ng-if="(countnbpart >= supquantitymax) && overrideqtys != true" > <i class="fas fa-times-circle"></i> Error : Overage in Quantity ! Report to center office.</h4>-->
+				<!--
+				<h4 class="errortonotify" ng-if="countnbpart > prevcount " > <i class="fas fa-times-circle"></i> Error : Quantity is over the last counted quantity.</h4>
+				<h4 class="errortonotify" ng-if="countnbpart < allowedqty " > <i class="fas fa-times-circle"></i> Error : Quantity is under the scrap allowance.</h4>
+				-->	
+		  </div>
+		  <div class="modal-footer">
+			<!--<button type="button" data-dismiss="modal" ng-click="resetFunction()">Done</button>-->
+			<button type="button" ng-click="resetCountSixFunction()">Done</button>
+
+		  </div>
+		</div>
+	  </div>
+	</div>
+<!-- END Modal remaining operation -->		
+
+		<form ng-model-options='{ debounce: 1000 }'>
+			<h4>Counting Book Log :</h4>
+			
+				<div class="form-group ">
+    				
+				  <label for="employeid">Employee ID :</label>
+				  <input size="20"  style="width:80px" type="text" ng-change="countSixPassFocus()" ng-model="countemploye" ng-model-options='{ debounce: 1000 }' id="employeid" placeholder="Employee ID ..." />
+				<br>
+				  <label for="lotno">Work Order Number 1 : </label>
+				  <input size="10" type="text" ng-change="countSixPassFocus()"  ng-model="countlot" ng-model-options='{ debounce: 1000 }' id="lotno" placeholder="Lot # ..." />
+				<br>
+				  <label for="nbpart">Number of Parts 1 : </label>
+				  <input size="20" style="width:80px" type="text"  ng-model="countnbpart" ng-change="countSixPassFocus()"  id="nbpart" placeholder="# parts" />			
+    				<br>
+    				<label for="notes">Notes 1:</label>
+    				<input size="20" type="text" ng-model="notesToAdd" id="notes"  ng-change="countSixPassFocus()" placeholder="Not Required"/>
+    				</div>
+    				<!------------end1------------> 
+				<div class="form-group">
+				  <label for="lotno2">Work Order Number 2 : </label>
+				  <input size="10" type="text" ng-change="countSixPassFocus()"  ng-model="countlot2" ng-model-options='{ debounce: 1000 }' id="lotno2" placeholder="Lot # ..." />
+				<br>
+				<label for="nbpart2">Number of Parts 2 : </label>
+				  <input size="20" style="width:80px" type="text" ng-change="countSixPassFocus()"  ng-model="countnbpart2"  id="nbpart2" placeholder="# parts" />			
+				<div class="form-group form-inline">
+    				<label for="notes2">Notes 2:</label>
+    				<input size="20" type="text" ng-model="notesToAdd2" ng-change="countSixPassFocus()" id="notes2" placeholder="Not Required"/>
+    				</div> 
+    				   				
+    				<!------------end2------------> 
+				<div class="form-group">
+				  <label for="lotno3">Work Order Number 3 : </label>
+				  <input size="10" type="text" ng-change="countSixPassFocus()"  ng-model="countlot3" ng-model-options='{ debounce: 1000 }' id="lotno3" placeholder="Lot # ..." />
+				<br>
+				<label for="nbpart3">Number of Parts 3 : </label>
+				  <input size="20" style="width:80px" type="text"  ng-model="countnbpart3" ng-change="countSixPassFocus()"  id="nbpart3" placeholder="# parts" />			
+				<br>
+				<label for="notes3">Notes 3:</label>
+    				<input size="20" type="text" ng-model="notesToAdd3" ng-change="countSixPassFocus()" id="notes3" placeholder="Not Required"/>
+    				</div> 
+    			<!------------end3------------> 
+				<div class="form-group">
+				  <label for="lotno4">Work Order Number 4 : </label>
+				  <input size="10" type="text" ng-change="countSixPassFocus()"  ng-model="countlot4" ng-model-options='{ debounce: 1000 }' id="lotno4" placeholder="Lot # ..." />
+				<br>
+				<label for="nbpart4">Number of Parts 4 : </label>
+				  <input size="20" style="width:80px" type="text" ng-change="countSixPassFocus()"  ng-model="countnbpart4"  id="nbpart4" placeholder="# parts" />			
+				
+				<br>
+    				<label for="notes4">Notes 4:</label>
+    				<input size="20" type="text" ng-change="countSixPassFocus()" ng-model="notesToAdd4" id="notes4" placeholder="Not Required"/>
+    				</div>     				
+    			<!------------end4------------>
+				<div class="form-group">
+				  <label for="lotno4">Work Order Number 5 : </label>
+				  <input size="10" type="text" ng-change="countSixPassFocus()"  ng-model="countlot5" ng-model-options='{ debounce: 1000 }' id="lotno5" placeholder="Lot # ..." />
+				<br>
+				
+				  <label for="nbpart4">Number of Parts 5 : </label>
+				  <input size="20" style="width:80px" type="text" ng-change="countSixPassFocus()"  ng-model="countnbpart5"  id="nbpart5" placeholder="# parts" />			
+				
+				<br>
+    				<label for="notes4">Notes 5:</label>
+    				<input size="20" type="text" ng-change="countSixPassFocus()" ng-model="notesToAdd5" id="notes5" placeholder="Not Required"/>
+    				</div>  
+    				    			<!------------end5------------> 
+				<div class="form-group ">
+				  <label for="lotno4">Work Order Number 6 : </label>
+				  <input size="10" type="text" ng-change="countSixPassFocus()"  ng-model="countlot6" ng-model-options='{ debounce: 1000 }' id="lotno6" placeholder="Lot # ..." />
+				
+				<br>
+				  <label for="nbpart6">Number of Parts 6 : </label>
+				  <input size="20" style="width:80px" type="text" ng-change="countSixPassFocus()"  ng-model="countnbpart6"  id="nbpart6" placeholder="# parts" />			
+				<br>
+    				<label for="notes4">Notes 6:</label>
+    				<input size="20" type="text" ng-change="countSixPassFocus()" ng-model="notesToAdd6" id="notes6" placeholder="Not Required"/>
+    				</div> 
+    				
+    				
+    				
+				
+				
+				<!--<button class="btnokcount" id="btnvalidate" ng-click="validateFunction(countemploye,countlot,countnbpart)"  data-toggle="modal" data-target="#nextOpModal" > Validate </button>-->
+				<button class="btnokcount" id="createholdcount" ng-click="createHoldCount(countemploye,countlot,countnbpart,notesToAdd,countlot2,countnbpart2,notesToAdd2,countlot3,countnbpart3,notesToAdd3,countlot4,countnbpart4,notesToAdd4,countlot5,countnbpart5,notesToAdd5,countlot6,countnbpart6,notesToAdd6)"  >Create Hold Area Count </button>
+            
+               <!-- These only show up after the http.post commits--> 
+            <!--  <div>Previous LOT# || MOVETO#</div>-->
+             <!--  <div ng-if="prevjob != null">{{prevjob}} || {{prevmoveto}}</div>-->
+                <!-- These are turned off after the resetFunction() executes -->
+				<!-- <div ng-repeat="data in countdata track by $index" id="previousInfo" style="background-color:lightblue"> -->
+    			<!-- 		<div ng-if="$index == countdata.length-1" id="redfish"> {{data.LotNo}}|| {{data.MoveTo}}</div>-->
+
+             <!--    </div>-->
+				
+    				
+		</form>
+		
+			
+	</div>
+	{% endverbatim %}
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+	<!--<script src="{% static 'PPCountLog.js' %}"></script>	-->
+	<!--<script src="{% static 'PPCountLog.js' %}?1"></script> -->
+	<script>document.write('<script src="{% static 'PPCountLog.js' %}?ver=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+
+</body>
+</html>
+
+{% endblock %}

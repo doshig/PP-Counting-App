@@ -1,0 +1,175 @@
+{% extends "Homepage/header.html" %}
+
+
+
+{% block content %}
+{% load staticfiles %}
+
+
+<html>
+
+<style>
+
+form {
+	padding-top: 30px;
+	padding-left: 14px;
+	width : 100%;
+	color: black;
+	font-weight:bold;
+}
+
+.btnokcount{
+	font-weight:bold;
+}
+
+.okdep {
+	color:green;
+}
+
+.nookdep {
+	color:red;
+}
+
+div.container1 {
+  font-weight: bold;
+  background-color: white ;
+  width: 100%;
+  overflow: scroll;
+  padding : 20px;
+}
+
+.table {
+	font-size: 14px;
+	color:black;
+}
+
+thead, tbody {
+	padding : 2px;
+}
+
+tr.listtoschedule:hover {
+
+	background-color: #CACFD2 ;
+	
+}
+
+td.tdschedulelist {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+}
+
+td.tdrightloc {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: green;
+
+}
+td.tdwrongloc {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: red;
+
+}
+
+
+</style> 
+
+
+<body ng-app="RV.JobLocation" >
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+	<!--<script src="{% static 'RVJobLocation.js' %}"></script>	-->
+	<!--<script>document.write('<script src="{% static 'RVErrorJob.js' %}?ver=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>-->
+	<script>document.write('<script src="{% static 'RVJobLocation.js' %}?ver=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+	{% verbatim %}
+	<div ng-controller="JobLocationController">
+		<form>
+			<legend>Job Location :</legend>
+			
+				<div class="form-group">
+				  <label for="actuallot">Enter or Scan the Work Order Number :</label>
+				  <p>
+				  <input size="15" type="text" ng-model="filterlot" id="actuallot" placeholder="Lot # ..." />	
+				</div>
+				
+		</form>
+		
+		<div class="container1" >
+		
+			<table class="table">
+			  <thead>
+				<tr class = "table-dark" > 
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Lot No. </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Date</th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Employee</th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Location</th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Correct Loc.</th>
+  				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Alternate Loc.</th>
+
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Correct Loc.</th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Notes</th>
+				</tr>
+			  
+				<tr>
+				  <td ></td>
+				  <td style="padding-top:1px;padding-bottom:1px;"> <input id="today" size="10" type="text" ng-model="filterdate" placeholder="yyyy/mm/dd "/></td>
+				  <td></td>
+				  <td style="padding-top:1px;padding-bottom:1px;"> <input id="location" size="10" type="text" ng-model="filterlocation" placeholder="Hold Area1"/></td>
+				  <td></td>
+				  <td></td>
+				  <td style="padding-top:1px;padding-bottom:1px;"> <input id="correctlocflag" size="10" type="checkbox" ng-model="filtercorrectloc" /> </td>
+				</tr>
+			  </thead>
+			  <tbody>
+				<tr class = "listtoschedule" ng-repeat="data in deptdata| filter: {LotNo:filterlot,Date:filterdate,Department:filterlocation, WrongLocation:filtercorrectloc}| orderBy:['-Date']">
+				  
+				  <td  class="tdschedulelist" >{{ data.LotNo }}</td>
+				  <td  class="tdschedulelist" >{{ data.Date| date : 'yyyy-MM-dd @ h.mma' }}</td>
+				  <td  class="tdschedulelist" >{{ data.EmployeName }}</td>
+				  <td  class="tdschedulelist" >{{ data.Department }}</td>
+				  <td  class="tdschedulelist" >{{ data.CorrectDept }}</td>
+				  <td  class="tdschedulelist" >{{ data.AllowedDepts }}</td>
+				  <td ng-if="data.WrongLocation == false" class="tdrightloc" > <i class="far fa-check-circle"></i> </td> <td  ng-if="data.WrongLocation == true"  class="tdwrongloc" > <i class="far fa-times-circle"></i> </td>
+				  <td  class="tdschedulelist" >{{ data.Notes }}</td>
+				</tr>
+			 
+			  </tbody>
+			
+			</table>
+		
+		</div>
+		
+		<div class="container2" >
+		
+		</div>
+		
+		
+		
+		
+			
+	</div>
+	{% endverbatim %}
+
+
+
+
+</body>
+</html>
+
+{% endblock %}

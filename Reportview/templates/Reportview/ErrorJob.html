@@ -1,0 +1,176 @@
+{% extends "Homepage/header.html" %}
+
+{% block content %}
+{% load staticfiles %}
+
+<!-- 02-14-19 - Update HTML to show NOTES section from model -->
+<html>
+
+<style>
+
+form {
+	padding-top: 30px;
+	padding-left: 14px;
+	width : 100%;
+	color: black;
+	font-weight:bold;
+}
+
+.btnokcount{
+	font-weight:bold;
+}
+
+.okdep {
+	color:green;
+}
+
+.nookdep {
+	color:red;
+}
+
+div.container1 {
+  font-weight: bold;
+  background-color: white ;
+  width: 100%;
+  overflow: scroll;
+  padding : 20px;
+}
+
+.table {
+	font-size: 14px;
+	color:black;
+}
+
+thead, tbody {
+	padding : 2px;
+}
+
+tr.listtoschedule:hover {
+
+	background-color: #CACFD2 ;
+	
+}
+
+td.tdschedulelist {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+}
+
+td.tdright {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: green;
+
+}
+td.tdwrong {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: red;
+
+}
+
+
+</style> 
+
+
+<body ng-app="RV.ErrorJob" >
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+	<!--<script src="{% static 'RVErrorJob.js' %}"></script>	-->
+	<script>document.write('<script src="{% static 'RVErrorJob.js' %}?ver=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+	{% verbatim %}
+	<div ng-controller="ErrorJobController">
+
+		
+		<div class="container1" >
+		
+			<table class="table">
+			  <thead>
+				<tr class = "table-dark" > 
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Lot No. </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Employee</th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Date</th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Quantity Counted</th>
+				  <!-- <th scope="col" style="padding-top:1px;padding-bottom:1px;">Qty/Supposed Qty//PrevCount / Scrap Allow.</th> For Testing Only -->
+
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Move To </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Prev Op Clocked Out </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Q-LAB open?</th>
+
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Visual Quantity</th>
+				  
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Prev Count</th>
+				  
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Arrived</th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Notes</th>
+				</tr>
+			  
+				<tr>		
+				  <td style="padding-top:1px;padding-bottom:1px;" > <input size="7" type="text" ng-model="filterlot" placeholder="Lot No..." /></td>
+				  <td style="padding-top:1px;padding-bottom:1px;"> <input size="10" type="text" ng-model="filteremploye" placeholder="Name..."/></td>
+				  <td style="padding-top:1px;padding-bottom:1px;"> <input id="today" size="10" type="text" ng-model="filterdate" placeholder="yyyy/mm/dd"/>  </td> 
+				  <td ></td>
+				  <td ></td>
+				  <td ></td>
+				  <td style="padding-top:1px;padding-bottom:1px;" > <input size="7" type="text" ng-model="filterlab" placeholder="True/False..." /></td>
+				  <td ></td>
+				  <td ></td>
+				  <td style="padding-top:1px;padding-bottom:1px;" > <input size="7" type="text" ng-model="filterarrived" placeholder="True/False..." /></td>
+				  <td ></td>
+				</tr>
+			  </thead>
+			  <tbody>
+			  
+				<tr class = "listtoschedule" ng-repeat="data in countdata| filter: {LotNo:filterlot,DateCount:filterdate,EmployeName:filteremploye,QLabOpen:filterlab,ArrivedTo:filterarrived}">
+				  
+				  <td  class="tdschedulelist" >{{ data.LotNo }}</td>
+				  <td  class="tdschedulelist" >{{ data.EmployeName }}</td>
+				  <td  class="tdschedulelist" >{{ data.DateCount }}</td> 
+				  <td  class="tdschedulelist" >{{ data.Quantity }} </td>
+				  <!-- <td  class="tdschedulelist" >{{ data.Quantity }} // {{ data.SupposedQuantity }} // {{ data.PreviousCount }} // {{data.ScrapAllowance}}</td>  For Testing only-->
+				  <td  class="tdschedulelist" >{{ data.MoveTo }}</td>
+				  
+				  <td ng-if="data.MissedClockOut == false" class="tdright" > <i class="far fa-check-circle"></i> </td> <td  ng-if="data.MissedClockOut == true"  class="tdwrong" > <i class="far fa-times-circle"></i> </td>
+				  <td ng-if="data.QLabOpen" class="tdright"> <div style="color:red">True</div> </td> <td ng-if="!data.QLabOpen" class="tdwrong">   <div style="color:green">False</div></td>
+				  <td ng-if="data.Quantity < 0.98*data.SupposedQuantity" class="tdwrong" > Shortage </td> <td  ng-if="data.Quantity > 1.05*data.SupposedQuantity"  class="tdwrong" > Overage </td> <td  ng-if="1.05*data.SupposedQuantity >= data.Quantity && data.Quantity >= 0.98*data.SupposedQuantity"  class="tdright" > - </td>
+				  
+				  <td ng-if="data.Quantity > data.PreviousCount" class="tdwrong" > Over </td> <td  ng-if="data.Quantity < data.ScrapAllowance"  class="tdwrong" > Under </td> <td  ng-if="data.PreviousCount >= data.Quantity && data.Quantity >= data.ScrapAllowance"  class="tdright" > - </td>
+				  
+				  <td ng-if="data.ArrivedTo == true" class="tdright" > <i class="far fa-check-circle"></i> </td> <td  ng-if="data.ArrivedTo == false"  class="tdwrong" > <i class="far fa-times-circle"></i> </td>
+				  <td  class="tdschedulelist" ><input type="text" ng-model="data.Notes" ng-change="update(data)"</td>
+				</tr>
+			 
+			  </tbody>
+			
+			</table>
+		
+		</div>
+		
+		
+			
+	</div>
+	{% endverbatim %}
+
+
+
+
+</body>
+</html>
+
+{% endblock %}

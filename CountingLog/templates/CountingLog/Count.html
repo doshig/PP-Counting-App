@@ -1,0 +1,132 @@
+{% extends "Homepage/header.html" %}
+
+{% block content %}
+{% load staticfiles %}
+
+
+<html>
+<!-- Update 02/25/19 - Add override qtys logic -->
+<!-- 3/29/19 add ?1 to the counting js import so it does CTRL+F5 automatically upon loading this page -->
+<!-- 06/07/19 - Update the move to to use a new API which querys on the back end instead of front end for 10x + performance -->
+<style>
+
+form {
+	padding-top: 30px;
+	padding-left: 14px;
+	width : 100%;
+	color: black;
+	font-weight:bold;
+}
+
+.btnokcount{
+	font-weight:bold;
+}
+
+.errortonotify{
+	
+	color: red;
+
+}
+
+
+
+</style> 
+
+
+<body ng-app="PP.CountLog" >
+
+	{% verbatim %}
+	<div ng-controller="CountLogController" class="OnLoadCount">	
+
+<!-- START Modal remaining operation -->	
+
+	<div class="modal" id="nextOpModal" ng-cloak>
+	  <div class="modal-dialog" role="dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title">Job : {{actualjob}} </h5>
+		  </div>
+		  <div class="modal-body">
+		  <!--W/O Target Qty: {{desiredqty}} Count: {{countnbpart}}-->
+	  			<h2 class="errortonotify" ng-if="belowtarget"> COUNT {{countnbpart}} &lt Target Qty {{desiredqty}}. SEE CENTER OFFICE. </h2>
+    		   <h4> Move to: {{ movetoop }}</h4> 
+				<p>
+				<h4 class="errortonotify" ng-if="errorclockout == true " > <i class="fas fa-times-circle"></i> Error : Previous operation not clocked out. </h4>
+				<h4 class="errortonotify" ng-if="QLABOpen" > <i class="fas fa-times-circle"></i> Error : LAB (Q-LAB) STILL OPEN.</h4>
+				<h4 class="errortonotify" ng-if="(countnbpart <= supquantitymin) && overrideqtys != true" > <i class="fas fa-times-circle"></i>{{overrideqtys}}{{OverrideQtys}} Error : Shortage in Quantity ! Report to center office. </h4>
+				<h4 class="errortonotify" ng-if="(countnbpart >= supquantitymax) && overrideqtys != true" > <i class="fas fa-times-circle"></i> Error : Overage in Quantity ! Report to center office.</h4>
+				<!--
+				<h4 class="errortonotify" ng-if="countnbpart > prevcount " > <i class="fas fa-times-circle"></i> Error : Quantity is over the last counted quantity.</h4>
+				<h4 class="errortonotify" ng-if="countnbpart < allowedqty " > <i class="fas fa-times-circle"></i> Error : Quantity is under the scrap allowance.</h4>
+				-->	
+		  </div>
+		  <div class="modal-footer">
+			<!--<button type="button" data-dismiss="modal" ng-click="resetFunction()">Done</button>-->
+			<button type="button" ng-click="resetFunction()">Done</button>
+
+		  </div>
+		</div>
+	  </div>
+	</div>
+<!-- END Modal remaining operation -->		
+
+
+
+		<form>
+    		
+			<legend>Counting Book Log :</legend>
+			
+				<div class="form-group">
+				  <label for="employeid">Employee ID :</label>
+				  <p>
+				  <input size="20" type="text" ng-change="passFocus()" ng-model="countemploye" ng-model-options='{ debounce: 1000 }' id="employeid" placeholder="Employee ID ..." />
+				</div>
+				<div class="form-group">
+				  <label for="lotno">Work Order Number : </label>
+				  <p>
+				  <input size="10" type="text" ng-change="passFocus1()"  ng-model="countlot" ng-model-options='{ debounce: 1000 }' id="lotno" placeholder="Lot # ..." />
+				</div>
+				<div class="form-group">
+				  <label for="nbpart">Number of Parts : </label>
+				  <p>
+				  <input size="20" type="text"  ng-model="countnbpart"  id="nbpart" placeholder="# of parts ..." />			
+				</div>
+				<div class="form-group">
+    				<label for="notes">Notes:</label>
+    				<p>
+    				<input size="20" type="text" ng-model="notesToAdd" id="notes" placeholder="Not Required"/>
+    				</div>
+				
+				
+				<!--<button class="btnokcount" id="btnvalidate" ng-click="validateFunction(countemploye,countlot,countnbpart)"  data-toggle="modal" data-target="#nextOpModal" > Validate </button>-->
+				<button class="btnokcount" id="btnvalidate" ng-click="validateFunction(countemploye,countlot,countnbpart,notesToAdd)"  > Validate </button>
+            
+               <!-- These only show up after the http.post commits--> 
+              <div>Previous LOT# || MOVETO#</div>
+              <div ng-if="prevjob != null">{{prevjob}} || {{prevmoveto}}</div>
+                <!-- These are turned off after the resetFunction() executes -->
+				
+				<div ng-repeat="data in lastcountdata">
+    				{{data.LotNo}} ||| {{data.MoveTo}}
+				</div>
+				
+
+				
+    				
+		</form>
+		
+			
+	</div>
+	{% endverbatim %}
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+	<!--<script src="{% static 'PPCountLog.js' %}"></script>	-->
+	<!--<script src="{% static 'PPCountLog.js' %}?1"></script> -->
+	<script>document.write('<script src="{% static 'PPCountLog.js' %}?ver=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+
+</body>
+</html>
+
+{% endblock %}

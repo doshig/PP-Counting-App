@@ -1,0 +1,127 @@
+{% extends "Homepage/header.html" %}
+
+{% block content %}
+{% load staticfiles %}
+
+
+<html>
+<!-- Update 02/25/19 - Add override qtys logic -->
+<!-- 3/29/19 add ?1 to the counting js import so it does CTRL+F5 automatically upon loading this page -->
+<style>
+body {
+    color: black;
+
+}
+form {
+	padding-top: 30px;
+	padding-left: 14px;
+	width : 100%;
+	color: black;
+	font-weight:bold;
+}
+
+.btnokcount{
+	font-weight:bold;
+}
+
+.errortonotify{
+	
+	color: red;
+
+}
+
+
+
+</style> 
+
+
+<body ng-app="PP.CountLog" >
+
+	{% verbatim %}
+	<div ng-controller="CountLogController" class="OnLoadCountPipeline">	
+
+<!-- START Modal remaining operation -->	
+
+	<div class="modal" id="nextOpModal" ng-cloak>
+	  <div class="modal-dialog" role="dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title">Job : {{actualjob}} </h5>
+		  </div>
+		  <div class="modal-body">
+		  <!--W/O Target Qty: {{desiredqty}} Count: {{countnbpart}}-->
+	  			<h2 class="errortonotify" ng-if="belowtarget"> COUNT {{countnbpart}} &lt Target Qty {{desiredqty}}. SEE CENTER OFFICE. </h2>
+    		   <h4> Move to: {{ movetoop }}</h4> 
+				<p>
+				<h4 class="errortonotify" ng-if="errorclockout == true " > <i class="fas fa-times-circle"></i> Error : Previous operation not clocked out. </h4>
+				<h4 class="errortonotify" ng-if="QLABOpen" > <i class="fas fa-times-circle"></i> Error : LAB (Q-LAB) STILL OPEN.</h4>
+				<h4 class="errortonotify" ng-if="(countnbpart <= supquantitymin) && overrideqtys != true" > <i class="fas fa-times-circle"></i>{{overrideqtys}}{{OverrideQtys}} Error : Shortage in Quantity ! Report to center office. </h4>
+				<h4 class="errortonotify" ng-if="(countnbpart >= supquantitymax) && overrideqtys != true" > <i class="fas fa-times-circle"></i> Error : Overage in Quantity ! Report to center office.</h4>
+				<!--
+				<h4 class="errortonotify" ng-if="countnbpart > prevcount " > <i class="fas fa-times-circle"></i> Error : Quantity is over the last counted quantity.</h4>
+				<h4 class="errortonotify" ng-if="countnbpart < allowedqty " > <i class="fas fa-times-circle"></i> Error : Quantity is under the scrap allowance.</h4>
+				-->	
+		  </div>
+		  <div class="modal-footer">
+			<!--<button type="button" data-dismiss="modal" ng-click="resetFunction()">Done</button>-->
+			<button type="button" ng-click="resetFunction()">Done</button>
+
+		  </div>
+		</div>
+	  </div>
+	</div>
+<!-- END Modal remaining operation -->		
+
+Lookup WO#<input type="text" ng-model="filterWO" id="filterWOID" onClick="this.select();"><br/>
+--------
+<br/>
+Op From:<input type="text" ng-model="filterOpFrom"> <br/>
+Op To:<input type="text" ng-model="filterOpTo"><br/>
+Scan Operation Step barcode. Ex: %218-3612$1$0$0$210%
+<br/>
+<!--<il ng-if="!pipelinedata.length"> Data loading, please wait </il>
+<il ng-if="pipelinedata.length"> Data loaded </il>-->
+<br/><il>--------------------------</il>
+<div  style="color:black" ng-repeat="data in openpipelinedata| filter:{workOrder: filterWO} : true | filter:{opSequenceFrom:filterOpFrom, opSequenceTo:filterOpTo}" ng-model-options='{ debounce: 1000 }'>
+
+WO#: {{data.workOrder}} | From OP: {{data.opSequenceFrom}} to Op: {{data.opSequenceTo}}<br/>
+<!--WO#:<input type="text" ng-model="data.workOrder" style="width:120px" > | FROM OP: <input type="text" ng-model="data.opSequenceFrom" style="width:50px" > to OP:<input type="text" ng-model="data.opSequenceTo" style="width:50px" > -->
+<br/>
+QTY 1: <input type="text" ng-model="data.quantity1" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> SAMPLE SIZE: <input type="text" ng-model="data.sampleSize1" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> BADGE# <input type="text" ng-model="data.buyOffBadge1" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> <il ng-if="data.buyOffPerson1"> Name: {{data.buyOffPerson1}} </il>
+<br/>
+QTY 2: <input type="text" ng-model="data.quantity2" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> SAMPLE SIZE: <input type="text" ng-model="data.sampleSize2" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> BADGE# <input type="text" ng-model="data.buyOffBadge2" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> <il ng-if="data.buyOffPerson2">Name: {{data.buyOffPerson2}} </il>
+<br/>
+QTY 3: <input type="text" ng-model="data.quantity3" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> SAMPLE SIZE: <input type="text" ng-model="data.sampleSize3" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> BADGE# <input type="text" ng-model="data.buyOffBadge3" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> <il ng-if="data.buyOffPerson3">Name: {{data.buyOffPerson3}} </il>
+<br/>
+QTY 4: <input type="text" ng-model="data.quantity4" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> SAMPLE SIZE: <input type="text" ng-model="data.sampleSize4" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> BADGE# <input type="text" ng-model="data.buyOffBadge4" style="width:50px" ng-change="updatePipeline(data)" onClick="this.select();"> <il ng-if="data.buyOffPerson4">Name: {{data.buyOffPerson4}} </il>
+<br/>
+
+<il ng-if="totalCount > data.totalCount">Total Count: {{totalCount}}</il>
+<il ng-if="!totalCount">Total Count: {{data.totalCount}}</il>
+<br/>
+<input type="button" style="height: 30px" ng-click="endPipeline(data)" value="End Pipeline">
+</div>
+<br/>
+<input type="button" style="height: 70px;width:200px" ng-click="createPipeline(filterWO, filterOpFrom, filterOpTo)" value="Create Pipeline">
+
+
+
+
+
+
+			
+	</div>
+	{% endverbatim %}
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+	<!--<script src="{% static 'PPCountLog.js' %}"></script>	-->
+	<!--<script src="{% static 'PPCountLog.js' %}?1"></script> -->
+	<script>document.write('<script src="{% static 'PPCountLog.js' %}?ver=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+
+</body>
+</html>
+
+{% endblock %}

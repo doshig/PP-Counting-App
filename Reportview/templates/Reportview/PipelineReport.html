@@ -1,0 +1,200 @@
+{% extends "Homepage/header.html" %}
+
+{% block content %}
+{% load staticfiles %}
+
+<!-- 02-14-19 - Update HTML to show NOTES section from model -->
+<html>
+
+<style>
+
+form {
+	padding-top: 30px;
+	padding-left: 14px;
+	width : 100%;
+	color: black;
+	font-weight:bold;
+}
+
+.btnokcount{
+	font-weight:bold;
+}
+
+.okdep {
+	color:green;
+}
+
+.nookdep {
+	color:red;
+}
+
+div.container1 {
+  font-weight: bold;
+  background-color: white ;
+  width: 100%;
+  overflow: scroll;
+  padding : 20px;
+}
+
+.table {
+	font-size: 14px;
+	color:black;
+}
+
+thead, tbody {
+	padding : 2px;
+}
+
+tr.listtoschedule:hover {
+
+	background-color: #CACFD2 ;
+	
+}
+
+td.tdschedulelist {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+}
+
+td.tdright {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: green;
+
+}
+td.tdwrong {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: red;
+
+}
+
+
+</style> 
+
+
+<body ng-app="RV.ErrorJob" >
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+	<!--<script src="{% static 'RVErrorJob.js' %}"></script>	-->
+	<script>document.write('<script src="{% static 'RVErrorJob.js' %}?ver=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+	{% verbatim %}
+	<div ng-controller="ErrorJobController">
+
+		
+		<div class="container1" >
+		<il style="color:black"> Scroll to the right for additional information...</il>
+			<table class="table">
+			  <thead>
+				<tr class = "table-dark" > 
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Lot No. </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">From Op#:</th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">To Op#:</th>
+				  <!-- <th scope="col" style="padding-top:1px;padding-bottom:1px;">Qty/Supposed Qty//PrevCount / Scrap Allow.</th> For Testing Only -->
+
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Total Count </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Pipeline Created </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Count 1 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Quantity 1 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Badge 1 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Person 1 </th>
+
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Count 2 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Quantity 2 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Badge 2 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Person 2 </th>
+
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Count 3 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Quantity 3 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Badge 3 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Person 3 </th>
+
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Count 4 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Quantity 4 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Badge 4 </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Person 4 </th>
+
+		
+				</tr>
+			  
+				<tr>		
+				  <td style="padding-top:1px;padding-bottom:1px;" > <input size="7" type="text" ng-model="filterlot" placeholder="Lot No..." /></td>
+				  <td style="padding-top:1px;padding-bottom:1px;"> <input id="today" style="width:40px" size="10" type="text" ng-model="filteropFrom" placeholder="210"/>  </td> 
+				  <td style="padding-top:1px;padding-bottom:1px;"> <input id="today" style="width:40px" size="10" type="text" ng-model="filteropTo" placeholder="230"/>  </td> 
+				  <td ></td>
+				  <td ></td>
+				  <td style="padding-top:1px;padding-bottom:1px;" > </td>
+				  <td ></td>
+				  <td ></td>
+				  <td style="padding-top:1px;padding-bottom:1px;" > </td>
+				  <td ></td>
+				</tr>
+			  </thead>
+			  <tbody>
+			  
+				<!--<tr class = "listtoschedule" ng-repeat="data in pipelinedata| filter: {LotNo:filterlot,DateCount:filterdate,EmployeName:filteremploye,QLabOpen:filterlab,ArrivedTo:filterarrived}">-->
+				<tr class="listtoschedule" ng-repeat="data in pipelinedata|filter:{workOrder: filterlot, opSequenceFrom:filteropFrom, opSequenceTo: filteropTo}">
+
+				  
+				  <td  class="tdschedulelist" >{{ data.workOrder }}</td>
+				  <td  class="tdschedulelist" >{{ data.opSequenceFrom }}</td> 
+				  <td  class="tdschedulelist" >{{ data.opSequenceTo }} </td>
+				  <!-- <td  class="tdschedulelist" >{{ data.Quantity }} // {{ data.SupposedQuantity }} // {{ data.PreviousCount }} // {{data.ScrapAllowance}}</td>  For Testing only-->
+				  <td  class="tdschedulelist" >{{ data.totalCount }}</td>
+				  <td  class="tdschedulelist" >{{ data.dateCreated | date:'short' }}</td>
+            
+				  <td  class="tdschedulelist" >{{ data.dateCount1 | date:'short' }}</td>
+				  <td  class="tdschedulelist" >{{ data.quantity1 }}</td>
+				  <td  class="tdschedulelist" >{{ data.buyOffBadge1  }}</td>
+				  <td  class="tdschedulelist" >{{ data.buyOffPerson1  }}</td>
+
+				  <td  class="tdschedulelist" >{{ data.dateCount2 | date:'short' }}</td>
+				  <td  class="tdschedulelist" >{{ data.quantity2 }}</td>
+				  <td  class="tdschedulelist" >{{ data.buyOffBadge2  }}</td>
+				  <td  class="tdschedulelist" >{{ data.buyOffPerson2  }}</td>
+				  
+				  <td  class="tdschedulelist" >{{ data.dateCount3 | date:'short' }}</td>
+				  <td  class="tdschedulelist" >{{ data.quantity3 }}</td>
+				  <td  class="tdschedulelist" >{{ data.buyOffBadge3  }}</td>
+				  <td  class="tdschedulelist" >{{ data.buyOffPerson3  }}</td>				  
+				  
+				  <td  class="tdschedulelist" >{{ data.dateCount4 | date:'short' }}</td>
+				  <td  class="tdschedulelist" >{{ data.quantity4 }}</td>
+				  <td  class="tdschedulelist" >{{ data.buyOffBadge4  }}</td>
+				  <td  class="tdschedulelist" >{{ data.buyOffPerson4  }}</td>
+				</tr>
+			 
+			  </tbody>
+			
+			</table>
+		
+		</div>
+		
+		
+			
+	</div>
+	{% endverbatim %}
+
+
+
+
+</body>
+</html>
+
+{% endblock %}

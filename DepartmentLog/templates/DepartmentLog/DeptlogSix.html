@@ -1,0 +1,155 @@
+{% extends "Homepage/header.html" %}
+
+{% block content %}
+{% load staticfiles %}
+
+
+<html>
+<!-- 02/13/19 Added Juan De La Torre -->
+
+<style>
+
+form {
+	padding-top: 5px;
+	padding-left: 14px;
+	width : 100%;
+	color: black;
+	font-weight:bold;
+}
+
+.btnokcount{
+	font-weight:bold;
+}
+
+.okdep {
+	color:green;
+}
+
+.nookdep {
+	color:red;
+}
+
+
+</style> 
+
+
+<body ng-app="PP.DepartmentLog" >
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+	<!--<script src="{% static 'PPDepartmentLog.js' %}"></script>	-->
+	<script>document.write('<script src="{% static 'PPDepartmentLog.js' %}?ver=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+	{% verbatim %}
+	<div ng-controller="DepartmentLogController">
+	
+
+<!-- START Modal remaining operation -->	
+
+	<div class="modal" id="validationModal"  >
+	  <div class="modal-dialog" role="dialog">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title">Status :</h5>
+		  </div>
+		  <div  class="modal-body">
+				<h3 class="okdep" ng-if="wrongdep1 == false" > <i class="far fa-check-circle"></i>Job 1 - Thank you </h3>
+				<h3 class="okdep" ng-if="wrongdep2 == false" > <i class="far fa-check-circle"></i>Job 2 - Thank you </h3>
+				<h3 class="okdep" ng-if="wrongdep3 == false" > <i class="far fa-check-circle"></i>Job 3 - Thank you </h3>
+				<h3 class="okdep" ng-if="wrongdep4 == false" > <i class="far fa-check-circle"></i>Job 4 - Thank you </h3>
+				<h3 class="okdep" ng-if="wrongdep5 == false" > <i class="far fa-check-circle"></i>Job 5 - Thank you </h3>
+				<h3 class="okdep" ng-if="wrongdep6 == false" > <i class="far fa-check-circle"></i>Job 6 - Thank you </h3>
+		  <!--</div>-->
+		  <!--<div ng-if="wrongdep == true" class="modal-body">	-->	
+				<h3 class="nookdep" ng-if="wrongdep1 == true"> <i class="fas fa-times-circle"></i>  Job 1 Wrong Dept. Correct:{{correctdept1}} </h3>
+				<h3 class="nookdep" ng-if="wrongdep2 == true"> <i class="fas fa-times-circle"></i>  Job 2 Wrong Dept. Correct:{{correctdept2}}</h3>
+				<h3 class="nookdep" ng-if="wrongdep3 == true"> <i class="fas fa-times-circle"></i>  Job 3 Wrong Dept. Correct:{{correctdept3}}</h3>
+				<h3 class="nookdep" ng-if="wrongdep4 == true"> <i class="fas fa-times-circle"></i>  Job 4 Wrong Dept. Correct:{{correctdept4}}</h3>
+				<h3 class="nookdep" ng-if="wrongdep5 == true"> <i class="fas fa-times-circle"></i>  Job 5 Wrong Dept. Correct:{{correctdept5}}</h3>
+				<h3 class="nookdep" ng-if="wrongdep6 == true"> <i class="fas fa-times-circle"></i>  Job 6 Wrong Dept. Correct:{{correctdept6}}</h3>
+
+				<!--<h3>Correct Dept: {{correctdept}} </h3>-->
+				<!--<h3>Alt. Dept: {{altdept}} </h3>-->
+		  </div>
+		  <div class="modal-footer">
+    		  <button type="button" ng-click="resetDeptSix()">Done</button>
+		  </div>
+
+		</div>
+	  </div>
+	</div>
+<!-- END Modal remaining operation -->		
+
+
+
+		<form>
+		
+			<legend>Department Log :</legend>
+				
+				<div class="form-group">
+				  <label for="customer">Operator Name :</label>
+				  <p>
+				  <!-- <input size="30" type="text" ng-model="filterlot" id="customer" placeholder="Customer ..." /> -->
+				  <select  ng-model="empname" ng-options="name as name.listNumber + ' - ' + name.userName for name in deptlogusers" id="emp" placeholder="Name ..." >
+					 </select>
+					<!-- <option> </option>
+					<option>1 - Jose Ortiz</option>
+					<option>2 - Joshua Pearce</option>
+					<option>3 - Mr. Super Chad</option>
+					<option>4 - Guillermo Hernandez</option>
+					<option>5 - Kevin Hill</option>
+					<option>6 - Andre Stevens</option>
+					<option>7 - Joseph Villasin</option>
+					<option>8 - Harman Bustos</option>
+					<option>9 - Jonathan Londono</option>
+					<option>10 - Mario Madrueno</option>
+					<option>11 - HEAT TREAT DEPT.</option>
+					<option>12 - Justice Way</option>
+					<option>13 - Matthew Kimball</option>
+					<option>14 - Yamil Alonso</option>
+					<option>15 - Juan De La Torre</option>
+					<option>16 - Jonathan Tobar</option>
+					<option>17 - Dearcey Smith</option>
+					<option>18 - Ryan Rivera</option>
+					<option>19 - Benjamin Rico</option>
+					<option>20 - Raymond Lopez</option> -->
+
+				 
+				  <br>	
+				  <label for="dep">Department : </label>
+				  <br>
+				  <input size="15" type="text" ng-model="deptid" ng-change="changeFocusDeptSix()" ng-model-options='{ debounce: 1000 }' id="dep" placeholder="Department ID ..." />
+				  <br>
+				  <label for="lotno">Work Orders: </label>
+				  <br>
+				  <input size="10" type="text" ng-model="deptlot" ng-change="changeFocusDeptSix()" ng-model-options='{ debounce: 1000 }' id="lotno" placeholder="Lot # 1..." />
+				  <br>
+				  <input size="10" type="text" ng-model="deptlot2" ng-change="changeFocusDeptSix()" ng-model-options='{ debounce: 1000 }' id="lotno2" placeholder="Lot # 2..." />
+				  <br>
+				  <input size="10" type="text" ng-model="deptlot3" ng-change="changeFocusDeptSix()" ng-model-options='{ debounce: 1000 }' id="lotno3" placeholder="Lot # 3..." />
+				  <br>
+				  <input size="10" type="text" ng-model="deptlot4" ng-change="changeFocusDeptSix()" ng-model-options='{ debounce: 1000 }' id="lotno4" placeholder="Lot # 4..." />
+				  <br>
+				  <input size="10" type="text" ng-model="deptlot5" ng-change="changeFocusDeptSix()" ng-model-options='{ debounce: 1000 }' id="lotno5" placeholder="Lot # 5..." />
+				  <br>
+				  <input size="10" type="text" ng-model="deptlot6" ng-change="changeFocusDeptSix()" ng-model-options='{ debounce: 1000 }' id="lotno6" placeholder="Lot # 6..." />
+				<br>
+				<button class="btnokcount" id="createdeptmentlogsix" ng-click="createDeptSix(empname, deptid, deptlot, deptlot2, deptlot3, deptlot4, deptlot5, deptlot6 )"  >Create Hold Department Log </button>
+				<br>
+				If you scan the SAME work order <br>multiple times it will not work correctly.
+				</div>
+				
+				
+		</form>
+		
+			
+	</div>
+	{% endverbatim %}
+
+
+
+
+</body>
+</html>
+
+{% endblock %}

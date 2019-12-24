@@ -1,0 +1,147 @@
+{% extends "Homepage/header.html" %}
+
+{% block content %}
+{% load staticfiles %}
+
+
+<html>
+
+<style>
+
+form {
+	padding-top: 30px;
+	padding-left: 14px;
+	width : 100%;
+	color: black;
+	font-weight:bold;
+}
+
+.btnokcount{
+	font-weight:bold;
+}
+
+.okdep {
+	color:green;
+}
+
+.nookdep {
+	color:red;
+}
+
+div.container1 {
+  font-weight: bold;
+  background-color: white ;
+  width: 100%;
+  overflow: scroll;
+  padding : 20px;
+}
+
+.table {
+	font-size: 14px;
+	color:black;
+}
+
+thead, tbody {
+	padding : 2px;
+}
+
+tr.listtoschedule:hover {
+
+	background-color: #CACFD2 ;
+	
+}
+
+td.tdschedulelist {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+}
+
+td.tdright {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: green;
+
+}
+td.tdwrong {
+	
+	padding-top:2px;
+	padding-bottom:2px;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: red;
+
+}
+
+
+</style> 
+
+
+<body ng-app="LL.Labview" >
+
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+	<script src="{% static 'LLView.js' %}"></script>	
+	<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
+	{% verbatim %}
+	<div ng-controller="LabviewController">
+		
+		<div class="container1" >
+		
+			<table class="table">
+			  <thead>
+				<tr class = "table-dark" > 
+				<input type="button" ng-click="resetCheckboxes()" value="Reset Filters"/>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;">Date out <input type="text" ng-model="filterdate" placeholder="Date out"  </th>
+				  <th> Employee ID </th>
+				  <th scope="col" style="padding-top:1px;padding-bottom:1px;"><input type="text" ng-model="filterlot" placeholder="Lot No..." /></th>
+				  <th> Q-LAB OP Open ? <input type="checkbox" id="OPopen" ng-model="opcheckbox"/></th>
+			  	  <th> Op(s) open </th>
+
+				  <th> Lab not finished? <input type="checkbox" id="labUnfinished" ng-model="notfinishedcheckbox" ng-init="notfinishedcheckbox=true"/> </th>
+				  <th> NOTES </th>
+				</tr>
+			 
+			  </thead>
+			  <tbody>
+				<!--<tr class = "listtoschedule" ng-repeat="data in labdata| filter: {VisualNotClosed:true}">-->
+				<tr class = "listtoschedule" ng-repeat="data in labdata | filter: {VisualNotClosed : opcheckbox, LabNotFinished : notfinishedcheckbox, LotNo: filterlot, Date : filterdate } |orderBy:'-Date'">
+				  
+				  <td class="tdschedulelist"> {{ data.Date | date : "yyyy-MM-dd @  hh:mm a"  }}</td>
+				  <td class="tdschedulelist"> {{data.EmployeName}} </td>
+				  <td class="tdschedulelist"> {{ data.LotNo }}</td>
+				  <td class="tdschedulelist"> {{data.VisualNotClosed}} </td>
+				  <td class="tdschedulelist"> {{data.OpNumOpen}} </td>
+				  <td ng-if="data.LabNotFinished" class="tdschedulelist" > Not Finished<input type="checkbox" ng-model="data.LabNotFinished" ng-change="updateModel(data)"</td>
+    			  <td ng-if="!data.LabNotFinished" class="tdschedulelist" > Lab Finished<input type="checkbox" ng-model="data.LabNotFinished" ng-change="updateModel(data)"</td>
+
+    			  <td class="tdschedulelist" >  <input type="text" ng-model="data.Notes" ng-change="updateModel(data)" value="data.Notes"</td>
+				</tr>
+			 
+			  </tbody>
+			
+			</table>
+		
+		</div>
+		
+		
+			
+	</div>
+	{% endverbatim %}
+
+
+
+
+</body>
+</html>
+
+{% endblock %}
